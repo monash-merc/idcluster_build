@@ -1,0 +1,52 @@
+--- 
+heat_template_version: 2013-05-23
+description: "A simple template to boot an ID cluster (LDAP server and karaage web server)"
+parameters:
+  ubuntu_1404_image_id:
+    type: string
+    label: Image ID
+    description: Ubuntu Image
+    default: d57696ba-5ed2-43fe-bf78-a587829973a9
+  centos_65_image_id:
+    type: string
+    label: Image ID
+    description: centos 6.5 image (for ldap server)
+    default: a5e74703-f343-415a-aa23-bd0f0aacfc9e
+  debian_7_image_id:
+    type: string
+    label: Image ID
+    description: Image to be used for Karaage Server
+    default: 8600a9ad-9381-499a-84b8-793c0c1f2a35
+  ssh_key:
+    type: string
+    default: cvl_cm_key
+  avz:
+    type: string
+    default: monash-01
+  
+
+resources:
+  LdapNode:
+   type: "OS::Nova::Server"
+   properties:
+    name: ldap
+    availability_zone: { get_param: avz }
+    flavor: m1.small
+    image: { get_param: debian_7_image_id }
+    key_name: { get_param: ssh_key }
+    security_groups: [ default ]
+    metadata:
+     ansible_host_groups: [ LdapNodes ]
+     ansible_ssh_user: ec2-user
+  KaraageNode:
+   type: "OS::Nova::Server"
+   properties:
+    name: web
+    availability_zone: { get_param: avz }
+    flavor: m1.small
+    image: { get_param: debian_7_image_id}
+    key_name: { get_param: ssh_key }
+    security_groups: [ default ]
+    metadata:
+     ansible_host_groups: [ KaraageNodes ]
+     ansible_ssh_user: ec2-user

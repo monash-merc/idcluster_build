@@ -1,0 +1,26 @@
+---
+
+- hosts: '*'
+  roles:
+  - etcHosts 
+
+- hosts: 'LdapNodes'
+  roles:
+  - { role: easy-rsa-CA }
+
+- hosts: 'LdapNodes'
+  vars:
+    x509_ca_server: "{{ groups['LdapNodes'][0] }}"  
+  roles:
+  - {role: ldapserver }
+
+- hosts: 'KaraageNodes'
+  vars:
+    x509_ca_server: "{{ groups['LdapNodes'][0] }}"  
+  roles:
+#  - {role: karaage2.7_noppolicy }
+  - {role: karaage2.7 }
+
+- hosts: 'LdapNodes'
+  roles:
+  - {role: dump_ldap_config }
